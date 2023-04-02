@@ -7,11 +7,17 @@ class VoiceController < ApplicationController
     # Parse input from JSON payload
     input_text = params[:text]
 
-    # Perform sentiment analysis on input text using Amazon Comprehend
+    #Detect the language on input text using Amazon Comprehend
     comprehend_client = Aws::Comprehend::Client.new(region: 'eu-central-1')
+    language_resp = comprehend_client.detect_dominant_language({ 
+      text: input_text
+    })
+    language_resp = language_resp.languages[0].language_code
+
+    # Perform sentiment analysis on input text using Amazon Comprehend
     sentiment_resp = comprehend_client.detect_sentiment({
       text: input_text,
-      language_code: 'en'
+      language_code: language_resp
     })
 
     # Get sentiment score and label
@@ -20,11 +26,19 @@ class VoiceController < ApplicationController
 
     # Generate audio file using Polly
     polly_client = Aws::Polly::Client.new
-    response = polly_client.synthesize_speech({
-      output_format: 'mp3',
-      text: input_text,
-      voice_id: 'Kendra'
+    if language_resp == "fr"
+      response = polly_client.synthesize_speech({
+        output_format: 'mp3',
+        text: input_text,
+        voice_id: 'Lea'
+      })
+    else
+      response = polly_client.synthesize_speech({
+        output_format: 'mp3',
+        text: input_text,
+        voice_id: 'Salli'
     })
+    end
 
     # Save audio file to S3 bucket
     s3_client = Aws::S3::Client.new( region: 'eu-central-1' ) 
