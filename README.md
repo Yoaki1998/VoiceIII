@@ -11,7 +11,7 @@ The TTS API converts input text to speech and returns a JSON response containing
 
 ### HTTP Request
 
-`POST /tts`
+`POST /text_to_speech`
 
 ### Query Parameters
 
@@ -36,7 +36,7 @@ The STT API transcribes an audio file located at a given URL to text and returns
 
 ### HTTP Request
 
-`POST /stt`
+`POST /speech_to_text`
 
 ### Query Parameters
 
